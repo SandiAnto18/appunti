@@ -1,3 +1,8 @@
+
+#SIMULAZIONE D'ESAME 26-27/05/2026
+# menu a tendina(voto da: a: ) + pulsante crea grafo +pulsante trova cammino
+
+
 # ============================================================
 # SCHEMA ESAME - POPOLARE UN MENU A TENDINA
 # ============================================================
@@ -193,3 +198,82 @@ self._controller.fillDDCountry()
 # VIEW = INIZIALIZZA / MOSTRA
 #
 # ============================================================
+
+# ============================================================
+# CREAZIONE GRAFO (pulsante crea grafo)
+# ============================================================
+
+# Grafo non orientato
+self._graph = nx.Graph()
+
+# Grafo orientato
+self._graph = nx.DiGraph()
+
+# ============================================================
+# DAO - recupero Customer di un paese con almeno una Invoice
+# ============================================================
+
+@staticmethod
+def getCustomerByCountry(country):
+    conn = DBConnect.get_connection()
+    results = []
+    cursor = conn.cursor(dictionary=True)
+
+    query = """
+        SELECT DISTINCT c.CustomerId AS cliente
+        FROM customer c, invoice i
+        WHERE country = %s
+        AND c.CustomerId = i.CustomerId
+    """
+
+    cursor.execute(query, (country,))
+
+    for row in cursor:
+        results.append(row["cliente"])
+
+    cursor.close()
+    conn.close()
+
+    return results
+
+# ============================================================
+# MODEL - creo i vertici del grafo
+# ============================================================
+
+def buildGraph(self, country):
+    self._graph.clear()
+
+    customers = DAO.getCustomerByCountry(country)
+
+    self._graph.add_nodes_from(customers)
+
+
+# ============================================================
+# MODEL - restituisco il numero di nodi
+# ============================================================
+
+def getNumNodi(self):
+    return len(self._graph.nodes())
+
+# ============================================================
+# CONTROLLER - pulsante Crea grafo
+# ============================================================
+
+def handleCreaGrafo(self, e):
+    country = self._view._ddCountry.value
+
+    self._model.buildGraph(country)
+
+    # Svuoto i risultati precedenti
+    self._view._txt_result.controls.clear()
+
+    # Mostro numero di nodi e archi
+    self._view._txt_result.controls.append(
+        ft.Text("Grafo correttamente creato:")
+    )
+
+    self._view._txt_result.controls.append(
+        ft.Text(f"Numero di nodi: {self._model.getNumNodi()}")
+    )
+
+
