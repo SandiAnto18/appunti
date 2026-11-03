@@ -12,5 +12,11 @@
 #DATEDIFF(DATA1,DATA2)<=(K)
 #STAMPA: 5 ARCHI DI PESO MAGGIORE
 
+#---2025/06/26 traccia A-B-C ----
+# 2 menu a tendina+ pulsante crea frago
+# grafo semplice e pesato
+
+
+
 
 
